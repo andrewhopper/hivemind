@@ -2,12 +2,12 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ErrorCode, ListToolsRequestSchema, McpError } from '@modelcontextprotocol/sdk/types.js';
-import { InMemoryStorageProvider } from './storage.js';
+import { PrismaStorageProvider } from './storage.js';
 import { validateCriteria } from './validation.js';
 import { StrictnessLevel } from './types.js';
 class FactsServer {
     constructor() {
-        this.storage = new InMemoryStorageProvider();
+        this.storage = new PrismaStorageProvider();
         this.server = new Server({
             name: 'facts-server',
             version: '0.1.0',
@@ -316,6 +316,15 @@ class FactsServer {
         const transport = new StdioServerTransport();
         await this.server.connect(transport);
         console.error('Facts MCP server running on stdio');
+        // Handle cleanup on shutdown
+        process.on('SIGINT', async () => {
+            await this.storage.close();
+            process.exit(0);
+        });
+        process.on('SIGTERM', async () => {
+            await this.storage.close();
+            process.exit(0);
+        });
     }
 }
 const server = new FactsServer();

@@ -1,0 +1,42 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./facts.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Fact {
+  id                String   @id
+  content          String
+  strictness       String   // Will map to StrictnessLevel enum
+  type             String
+  minVersion       String
+  maxVersion       String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  applicable       Boolean  @default(true)
+  content_embedding String?
+  
+  // Relations
+  conditions         Condition[]
+  acceptanceCriteria AcceptanceCriterion[]
+}
+
+model Condition {
+  id        String   @id @default(cuid())
+  factId    String
+  type      String   // REQUIRES or CONFLICTS_WITH
+  targetId  String   // The ID of the fact this condition references
+  fact      Fact     @relation(fields: [factId], references: [id])
+}
+
+model AcceptanceCriterion {
+  id               String   @id @default(cuid())
+  factId           String
+  description      String
+  validationType   String   // MANUAL or AUTOMATED
+  validationScript String?
+  fact             Fact     @relation(fields: [factId], references: [id])
+}

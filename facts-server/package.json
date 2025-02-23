@@ -17,9 +17,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.5.0"
+    "@modelcontextprotocol/sdk": "^1.5.0",
+    "@prisma/client": "^6.4.1",
+    "sqlite-vec": "^0.1.7-alpha.2",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "prisma": "^6.4.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }

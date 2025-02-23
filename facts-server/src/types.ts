@@ -48,7 +48,8 @@ export interface StorageProvider {
         minVersion: string,
         maxVersion: string,
         conditions: Condition[],
-        acceptanceCriteria: AcceptanceCriterion[]
+        acceptanceCriteria: AcceptanceCriterion[],
+        contentEmbedding?: string
     ): Promise<void>;
 
     getFact(id: string): Promise<StorageSearchResult | null>;
@@ -57,6 +58,8 @@ export interface StorageProvider {
         type?: string;
         strictness?: StrictnessLevel;
         version?: string;
+        embedding?: string;
+        similarityThreshold?: number;
     }): Promise<StorageSearchResult[]>;
 
     deleteFact(id: string): Promise<boolean>;
