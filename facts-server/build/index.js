@@ -14,6 +14,13 @@ class FactsServer {
         }, {
             capabilities: {
                 tools: {
+                    get_all_facts: {
+                        description: 'Get all facts in the system',
+                        inputSchema: {
+                            type: 'object',
+                            properties: {}
+                        }
+                    },
                     get_fact: {
                         description: 'Get a fact by ID',
                         inputSchema: {
@@ -123,6 +130,14 @@ class FactsServer {
         this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
             tools: [
                 {
+                    name: 'get_all_facts',
+                    description: 'Get all facts in the system',
+                    inputSchema: {
+                        type: 'object',
+                        properties: {}
+                    }
+                },
+                {
                     name: 'get_fact',
                     description: 'Get a fact by ID',
                     inputSchema: {
@@ -230,6 +245,12 @@ class FactsServer {
         // Handler for executing tools
         this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
             switch (request.params.name) {
+                case 'get_all_facts': {
+                    const facts = await this.storage.searchFacts({});
+                    return {
+                        content: [{ type: 'text', text: JSON.stringify(facts, null, 2) }]
+                    };
+                }
                 case 'get_fact': {
                     const args = request.params.arguments;
                     const fact = await this.storage.getFact(args.id);
