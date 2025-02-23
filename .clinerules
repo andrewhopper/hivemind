@@ -1,0 +1,87 @@
+version: "1.0"
+
+# Facts integration settings
+facts:
+  # Automatically save decisions made during development
+  auto_save: true
+  
+  # Default settings for new facts
+  defaults:
+    strictness: "RECOMMENDED"  # Default strictness level
+    min_version: "1.0.0"      # Minimum version compatibility
+    max_version: "*"          # Maximum version compatibility ("*" means latest)
+    
+  # Validation settings
+  validation:
+    # Validate all proposals against existing facts
+    validate_proposals: true
+    # Stop if validation fails for REQUIRED facts
+    strict_validation: true
+    # Categories to validate against (empty means all)
+    categories: []
+    
+  # Fact type mappings
+  types:
+    architecture_decision: 
+      category: "ARCHITECTURE_PATTERN"
+      strictness: "REQUIRED"
+    
+    code_style:
+      category: "CODE_STYLE"
+      strictness: "RECOMMENDED"
+    
+    naming_convention:
+      category: "NAMING_CONVENTION"
+      strictness: "REQUIRED"
+    
+    project_structure:
+      category: "PROJECT_STRUCTURE"
+      strictness: "REQUIRED"
+    
+    design_pattern:
+      category: "DESIGN_PATTERN"
+      strictness: "RECOMMENDED"
+    
+    testing_pattern:
+      category: "TESTING_PATTERN"
+      strictness: "REQUIRED"
+    
+    security_rule:
+      category: "SECURITY"
+      strictness: "REQUIRED"
+    
+    deployment_rule:
+      category: "DEPLOYMENT"
+      strictness: "REQUIRED"
+    
+    performance_guideline:
+      category: "OPTIMIZATION"
+      strictness: "RECOMMENDED"
+    
+    error_handling:
+      category: "ERROR_HANDLING"
+      strictness: "REQUIRED"
+    
+    documentation:
+      category: "DOCUMENTATION"
+      strictness: "RECOMMENDED"
+    
+    git_workflow:
+      category: "GIT_WORKFLOW"
+      strictness: "REQUIRED"
+    
+    code_review:
+      category: "CODE_REVIEW"
+      strictness: "RECOMMENDED"
+    
+    package_management:
+      category: "PACKAGE_MANAGEMENT"
+      strictness: "REQUIRED"
+    
+    accessibility:
+      category: "ACCESSIBILITY"
+      strictness: "REQUIRED"
+    
+    internationalization:
+      category: "INTERNATIONALIZATION"
+      strictness: "RECOMMENDED"
