@@ -3,12 +3,13 @@ export class PrismaStorageProvider {
     constructor() {
         this.prisma = new PrismaClient();
     }
-    async setFact(id, content, strictness, type, minVersion, maxVersion, conditions, acceptanceCriteria, contentEmbedding) {
+    async setFact(id, content, strictness, type, category, minVersion, maxVersion, conditions, acceptanceCriteria, contentEmbedding) {
         const data = {
             id,
             content,
             strictness,
             type,
+            category,
             minVersion,
             maxVersion,
             content_embedding: contentEmbedding,
@@ -67,6 +68,7 @@ export class PrismaStorageProvider {
             content: fact.content,
             strictness: fact.strictness,
             type: fact.type,
+            category: fact.category,
             minVersion: fact.minVersion,
             maxVersion: fact.maxVersion,
             conditions: fact.conditions.map(c => ({
@@ -94,6 +96,10 @@ export class PrismaStorageProvider {
             if (options.type) {
                 whereConditions.push('f.type = ?');
                 params.push(options.type);
+            }
+            if (options.category) {
+                whereConditions.push('f.category = ?');
+                params.push(options.category);
             }
             if (options.strictness) {
                 whereConditions.push('f.strictness = ?');
@@ -127,6 +133,9 @@ export class PrismaStorageProvider {
             if (options.type) {
                 where.type = options.type;
             }
+            if (options.category) {
+                where.category = options.category;
+            }
             if (options.strictness) {
                 where.strictness = options.strictness;
             }
@@ -149,6 +158,7 @@ export class PrismaStorageProvider {
             content: fact.content,
             strictness: fact.strictness,
             type: fact.type,
+            category: fact.category,
             minVersion: fact.minVersion,
             maxVersion: fact.maxVersion,
             conditions: fact.conditions.map(c => ({

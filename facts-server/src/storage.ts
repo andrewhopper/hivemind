@@ -1,5 +1,5 @@
 import { PrismaClient, Prisma } from '@prisma/client';
-import { StorageProvider, StorageSearchResult, StrictnessLevel, Condition, AcceptanceCriterion } from './types.js';
+import { StorageProvider, StorageSearchResult, StrictnessLevel, FactCategory, Condition, AcceptanceCriterion } from './types.js';
 
 export class PrismaStorageProvider implements StorageProvider {
     private prisma: PrismaClient;
@@ -13,6 +13,7 @@ export class PrismaStorageProvider implements StorageProvider {
         content: string,
         strictness: StrictnessLevel,
         type: string,
+        category: FactCategory,
         minVersion: string,
         maxVersion: string,
         conditions: Condition[],
@@ -24,6 +25,7 @@ export class PrismaStorageProvider implements StorageProvider {
             content,
             strictness,
             type,
+            category,
             minVersion,
             maxVersion,
             content_embedding: contentEmbedding,
@@ -86,6 +88,7 @@ export class PrismaStorageProvider implements StorageProvider {
             content: fact.content,
             strictness: fact.strictness as StrictnessLevel,
             type: fact.type,
+            category: fact.category as FactCategory,
             minVersion: fact.minVersion,
             maxVersion: fact.maxVersion,
             conditions: fact.conditions.map(c => ({
@@ -106,6 +109,7 @@ export class PrismaStorageProvider implements StorageProvider {
 
     async searchFacts(options: {
         type?: string;
+        category?: FactCategory;
         strictness?: StrictnessLevel;
         version?: string;
         embedding?: string;
@@ -122,6 +126,11 @@ export class PrismaStorageProvider implements StorageProvider {
             if (options.type) {
                 whereConditions.push('f.type = ?');
                 params.push(options.type);
+            }
+
+            if (options.category) {
+                whereConditions.push('f.category = ?');
+                params.push(options.category);
             }
 
             if (options.strictness) {
@@ -170,6 +179,10 @@ export class PrismaStorageProvider implements StorageProvider {
                 where.type = options.type;
             }
 
+            if (options.category) {
+                where.category = options.category;
+            }
+
             if (options.strictness) {
                 where.strictness = options.strictness;
             }
@@ -195,6 +208,7 @@ export class PrismaStorageProvider implements StorageProvider {
             content: fact.content,
             strictness: fact.strictness as StrictnessLevel,
             type: fact.type,
+            category: fact.category as FactCategory,
             minVersion: fact.minVersion,
             maxVersion: fact.maxVersion,
             conditions: fact.conditions.map(c => ({

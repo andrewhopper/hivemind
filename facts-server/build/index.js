@@ -4,7 +4,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { CallToolRequestSchema, ErrorCode, ListToolsRequestSchema, McpError } from '@modelcontextprotocol/sdk/types.js';
 import { PrismaStorageProvider } from './storage.js';
 import { validateCriteria } from './validation.js';
-import { StrictnessLevel } from './types.js';
+import { StrictnessLevel, FactCategory } from './types.js';
 class FactsServer {
     constructor() {
         this.storage = new PrismaStorageProvider();
@@ -67,6 +67,11 @@ class FactsServer {
                                     enum: Object.values(StrictnessLevel)
                                 },
                                 type: { type: 'string' },
+                                category: {
+                                    type: 'string',
+                                    enum: Object.values(FactCategory),
+                                    description: 'The category this fact belongs to'
+                                },
                                 minVersion: { type: 'string' },
                                 maxVersion: { type: 'string' },
                                 conditions: {
@@ -100,7 +105,7 @@ class FactsServer {
                                     }
                                 }
                             },
-                            required: ['id', 'content', 'strictness', 'type', 'minVersion', 'maxVersion']
+                            required: ['id', 'content', 'strictness', 'type', 'category', 'minVersion', 'maxVersion']
                         }
                     },
                     validate_criteria: {
@@ -186,6 +191,11 @@ class FactsServer {
                                 enum: Object.values(StrictnessLevel)
                             },
                             type: { type: 'string' },
+                            category: {
+                                type: 'string',
+                                enum: Object.values(FactCategory),
+                                description: 'The category this fact belongs to'
+                            },
                             minVersion: { type: 'string' },
                             maxVersion: { type: 'string' },
                             conditions: {
@@ -219,7 +229,7 @@ class FactsServer {
                                 }
                             }
                         },
-                        required: ['id', 'content', 'strictness', 'type', 'minVersion', 'maxVersion']
+                        required: ['id', 'content', 'strictness', 'type', 'category', 'minVersion', 'maxVersion']
                     }
                 },
                 {
@@ -274,7 +284,7 @@ class FactsServer {
                 case 'set_fact': {
                     const args = request.params.arguments;
                     try {
-                        await this.storage.setFact(args.id, args.content, args.strictness, args.type, args.minVersion, args.maxVersion, args.conditions || [], args.acceptanceCriteria || []);
+                        await this.storage.setFact(args.id, args.content, args.strictness, args.type, args.category, args.minVersion, args.maxVersion, args.conditions || [], args.acceptanceCriteria || []);
                         return {
                             content: [{ type: 'text', text: `Fact ${args.id} saved successfully` }]
                         };

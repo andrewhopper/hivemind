@@ -12,6 +12,7 @@ model Fact {
   content          String
   strictness       String   // Will map to StrictnessLevel enum
   type             String
+  category         String   // Will map to FactCategory enum
   minVersion       String
   maxVersion       String
   createdAt        DateTime @default(now())

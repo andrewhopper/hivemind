@@ -4,7 +4,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { CallToolRequestSchema, ErrorCode, ListToolsRequestSchema, McpError } from '@modelcontextprotocol/sdk/types.js';
 import { PrismaStorageProvider } from './storage.js';
 import { validateCriteria, validateFactConditions } from './validation.js';
-import { StrictnessLevel, AcceptanceCriterion, Condition } from './types.js';
+import { StrictnessLevel, FactCategory, AcceptanceCriterion, Condition } from './types.js';
 
 class FactsServer {
     private server: Server;
@@ -73,6 +73,11 @@ class FactsServer {
                                         enum: Object.values(StrictnessLevel)
                                     },
                                     type: { type: 'string' },
+                                    category: {
+                                        type: 'string',
+                                        enum: Object.values(FactCategory),
+                                        description: 'The category this fact belongs to'
+                                    },
                                     minVersion: { type: 'string' },
                                     maxVersion: { type: 'string' },
                                     conditions: {
@@ -106,7 +111,7 @@ class FactsServer {
                                         }
                                     }
                                 },
-                                required: ['id', 'content', 'strictness', 'type', 'minVersion', 'maxVersion']
+                                required: ['id', 'content', 'strictness', 'type', 'category', 'minVersion', 'maxVersion']
                             }
                         },
                         validate_criteria: {
@@ -195,6 +200,11 @@ class FactsServer {
                                 enum: Object.values(StrictnessLevel)
                             },
                             type: { type: 'string' },
+                            category: {
+                                type: 'string',
+                                enum: Object.values(FactCategory),
+                                description: 'The category this fact belongs to'
+                            },
                             minVersion: { type: 'string' },
                             maxVersion: { type: 'string' },
                             conditions: {
@@ -228,7 +238,7 @@ class FactsServer {
                                 }
                             }
                         },
-                        required: ['id', 'content', 'strictness', 'type', 'minVersion', 'maxVersion']
+                        required: ['id', 'content', 'strictness', 'type', 'category', 'minVersion', 'maxVersion']
                     }
                 },
                 {
@@ -279,6 +289,7 @@ class FactsServer {
                 case 'search_facts': {
                     const args = request.params.arguments as {
                         type?: string;
+                        category?: FactCategory;
                         strictness?: StrictnessLevel;
                         version?: string;
                     };
@@ -294,6 +305,7 @@ class FactsServer {
                         content: string;
                         strictness: StrictnessLevel;
                         type: string;
+                        category: FactCategory;
                         minVersion: string;
                         maxVersion: string;
                         conditions?: Condition[];
@@ -305,6 +317,7 @@ class FactsServer {
                             args.content,
                             args.strictness as StrictnessLevel,
                             args.type,
+                            args.category,
                             args.minVersion,
                             args.maxVersion,
                             args.conditions || [],
