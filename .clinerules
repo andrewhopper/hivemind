@@ -142,9 +142,49 @@ facts:
     validate_proposals: true
     # Stop if validation fails for REQUIRED facts
     strict_validation: true
-    # Categories to validate against (empty means all)
-    categories: []
+    # Categories to validate against
+    categories: [
+      "ARCHITECTURE_PATTERN",
+      "DATABASE",
+      "FRONTEND",
+      "BACKEND",
+      "DOCUMENTATION"
+    ]
+    # Automatic validation hooks
+    hooks:
+      pre_commit: true      # Validate before git commits
+      pre_deploy: true      # Validate before deployments
+      pull_request: true    # Validate on PR creation/update
     
+  # Automatic fact creation triggers
+  triggers:
+    # Create facts when new dependencies are added
+    dependencies:
+      - package.json
+      - requirements.txt
+      - pyproject.toml
+      - Cargo.toml
+    
+    # Create facts for new architectural components
+    architecture:
+      - "**/*.config.{js,ts}"
+      - "**/schema.prisma"
+      - "**/docker-compose.yml"
+      - "**/Dockerfile"
+    
+    # Create facts for API contracts
+    api:
+      - "**/api/**/*.{ts,js}"
+      - "**/routes/**/*.{ts,js}"
+      - "**/*.proto"
+      - "**/openapi.{yaml,yml,json}"
+    
+    # Create facts for security configurations
+    security:
+      - "**/auth/**/*.{ts,js}"
+      - "**/*.env.example"
+      - "**/security.config.{js,ts}"
+
   # Fact type mappings
   types:
     architecture_decision: 
