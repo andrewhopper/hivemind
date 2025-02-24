@@ -4,7 +4,7 @@ A fact management system that provides automatic coding tools with consistent gu
 
 ## Why HiveMind?
 
-AI coding tools make the same mistakes again and again.  If you've tried building with NextJS 15 they frequently mess up AppRouter; using ShadCN chances are they've used the wrong command- npx install shadcn-ui instead of npx install shadcn.  
+AI coding tools make the same mistakes again and again.  If you've tried building with NextJS 15 they frequently mess up AppRouter; using ShadCN chances are they've used the wrong command- npx install shadcn-ui instead of npx install shadcn.  They also don't make good or consistent architecture and design decisions.
 
 ![Side by side comparison showing HiveMind's impact](docs/side-by-side.png)
 
