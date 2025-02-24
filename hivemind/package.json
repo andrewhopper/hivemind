@@ -1,0 +1,65 @@
+{
+  "name": "@modelcontextprotocol/hivemind",
+  "version": "1.0.0",
+  "description": "MCP server for managing development knowledge and validation through facts and acceptance criteria",
+  "type": "module",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "tsc && chmod +x build/index.js",
+    "dev": "node --inspect -r ts-node/register --loader ts-node/esm src/index.ts",
+    "start": "node build/index.js",
+    "prepare": "prisma generate",
+    "prisma:generate": "prisma generate",
+    "prisma:seed": "node --loader ts-node/esm prisma/seed/index.ts",
+    "db:seed": "prisma db seed",
+    "prepublishOnly": "npm run build",
+    "preversion": "npm test",
+    "version": "npm run build && git add -A",
+    "postversion": "git push && git push --tags"
+  },
+  "prisma": {
+    "seed": "node --loader ts-node/esm prisma/seed/index.ts"
+  },
+  "keywords": [
+    "mcp",
+    "documentation",
+    "validation"
+  ],
+  "author": "Andrew Hopper (andrewhopper.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/modelcontextprotocol/hivemind.git"
+  },
+  "bugs": {
+    "url": "https://github.com/modelcontextprotocol/hivemind/issues"
+  },
+  "homepage": "https://github.com/modelcontextprotocol/hivemind#readme",
+  "bin": {
+    "hivemind": "./build/index.js"
+  },
+  "files": [
+    "build/**/*",
+    "prisma/schema.prisma",
+    "prisma/migrations/**/*",
+    "prisma/seed/**/*"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "types": "build/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.5.0",
+    "@prisma/client": "^6.4.1",
+    "sqlite-vec": "^0.1.7-alpha.2",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "prisma": "^6.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

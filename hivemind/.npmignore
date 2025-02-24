@@ -1,0 +1,43 @@
+# Source
+src/
+
+# Development
+.vscode/
+.idea/
+.git/
+.gitignore
+.DS_Store
+*.log
+*.tsbuildinfo
+
+# Tests
+test/
+coverage/
+*.test.ts
+*.spec.ts
+
+# Development database
+prisma/facts.db
+prisma/dev.db
+
+# Environment
+.env*
+.env.local
+.env.*.local
+
+# Build process
+tsconfig.json
+tsconfig.*.json
+
+# Development dependencies
+node_modules/
+
+# Documentation
+docs/
+CONTRIBUTING.md
+
+# Temporary files
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
