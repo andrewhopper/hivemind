@@ -144,9 +144,9 @@ Contributions are welcome! Feel free to submit issues, feature requests, or pull
 ## Contact
 
 You can reach me on:
-- LinkedIn
-- X
-- [andrewhopper.com](https://andrewhopper.com)
+- https://www.linkedin.com/in/andrewhopper
+- https://x.com/andrewhopper
+- https://andrewhopper.com
 
 ## License
 
