@@ -4,6 +4,8 @@ A fact management system that provides automatic coding tools with consistent gu
 
 ## Why HiveMind?
 
+Every time I use AI coding tools they make the same mistakes again and against.  If you've tried building with NextJS 15 they frequently mess up AppRouter; using ShadCN chances are they've used the wrong command- npx install shadcn-ui instead of npx install shadcn.  
+
 When working with automatic coding tools like Cline in Cursor, developers often find themselves repeatedly providing the same guidance about coding standards, preferred libraries, and architectural patterns. HiveMind solves this by creating a centralized system for managing and enforcing these development guidelines through the Model Context Protocol (MCP).
 
 This repository is a prototype that demonstrates an MCP server that allows facts to be set, retrieved, searched, and validated against. The goal is to help autonomous coding tools maintain consistency with your project's standards and preferences.
