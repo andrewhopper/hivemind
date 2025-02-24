@@ -14,8 +14,8 @@
     "documentation",
     "validation"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "Andrew Hopper (andrewhopper.com)",
+  "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.5.0",
     "@prisma/client": "^6.4.1",
