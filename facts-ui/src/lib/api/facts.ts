@@ -1,34 +1,23 @@
 import { Fact, FactFormData } from "../types/facts"
-
-const MCP_SERVER = "facts"
-
-async function mcpRequest<T, Args extends Record<string, unknown>>(tool: string, args: Args): Promise<T> {
-    const response = await fetch("/api/mcp", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            server: MCP_SERVER,
-            tool,
-            args,
-        }),
-    })
-
-    if (!response.ok) {
-        throw new Error(`MCP request failed: ${response.statusText}`)
-    }
-
-    const data = await response.json()
-    return data
-}
+import prisma from "@/lib/prisma"
 
 export async function getAllFacts(): Promise<Fact[]> {
-    return mcpRequest<Fact[], Record<string, never>>("get_all_facts", {})
+    return prisma.fact.findMany({
+        include: {
+            conditions: true,
+            acceptanceCriteria: true
+        }
+    })
 }
 
 export async function getFact(id: string): Promise<Fact | null> {
-    return mcpRequest<Fact | null, { id: string }>("get_fact", { id })
+    return prisma.fact.findUnique({
+        where: { id },
+        include: {
+            conditions: true,
+            acceptanceCriteria: true
+        }
+    })
 }
 
 export async function searchFacts(params: {
@@ -36,20 +25,79 @@ export async function searchFacts(params: {
     strictness?: string
     version?: string
 }): Promise<Fact[]> {
-    return mcpRequest<Fact[], typeof params>("search_facts", params)
+    const { type, strictness, version } = params
+    return prisma.fact.findMany({
+        where: {
+            ...(type && { type }),
+            ...(strictness && { strictness }),
+            ...(version && {
+                OR: [
+                    { minVersion: { lte: version } },
+                    { minVersion: null }
+                ],
+                AND: [
+                    { maxVersion: { gte: version } },
+                    { maxVersion: { not: null } }
+                ]
+            })
+        },
+        include: {
+            conditions: true,
+            acceptanceCriteria: true
+        }
+    })
 }
 
 export async function createFact(data: FactFormData): Promise<void> {
-    await mcpRequest<void, FactFormData>("set_fact", data)
+    await prisma.fact.create({
+        data: {
+            ...data,
+            conditions: {
+                create: data.conditions || []
+            },
+            acceptanceCriteria: {
+                create: data.acceptanceCriteria || []
+            }
+        }
+    })
 }
 
 export async function updateFact(id: string, data: FactFormData): Promise<void> {
-    await mcpRequest<void, FactFormData & { id: string }>("set_fact", { ...data, id })
+    await prisma.fact.update({
+        where: { id },
+        data: {
+            ...data,
+            conditions: {
+                deleteMany: {},
+                create: data.conditions || []
+            },
+            acceptanceCriteria: {
+                deleteMany: {},
+                create: data.acceptanceCriteria || []
+            }
+        }
+    })
 }
 
 export async function validateFact(factId: string, content: string): Promise<{
     passed: boolean
     message?: string
 }> {
-    return mcpRequest<{ passed: boolean; message?: string }, { factId: string; content: string }>("validate_criteria", { factId, content })
+    const fact = await prisma.fact.findUnique({
+        where: { id: factId },
+        include: { acceptanceCriteria: true }
+    })
+
+    if (!fact) {
+        return {
+            passed: false,
+            message: "Fact not found"
+        }
+    }
+
+    // For now, just check if content exists
+    return {
+        passed: !!content,
+        message: content ? "Content provided" : "Content is required"
+    }
 }

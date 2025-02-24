@@ -1,3 +1,5 @@
+"use client"
+
 import { ColumnDef } from "@tanstack/react-table"
 import { Fact, StrictnessLevel } from "@/lib/types/facts"
 import { Badge } from "@/components/ui/badge"
