@@ -1,3 +1,6 @@
+import { Prisma } from '@prisma/client';
+
+// Enums
 export enum FactCategory {
     // Architecture Layers
     FRONTEND = 'FRONTEND',
@@ -46,17 +49,27 @@ export enum StrictnessLevel {
     OPTIONAL = 'OPTIONAL'
 }
 
-export interface Condition {
-    factId: string;
-    type: 'REQUIRES' | 'CONFLICTS_WITH';
+export enum ConditionType {
+    REQUIRES = 'REQUIRES',
+    CONFLICTS_WITH = 'CONFLICTS_WITH'
 }
 
-export type ValidationType = 'MANUAL' | 'AUTOMATED' | 'URL_CHECK';
+export enum ValidationType {
+    MANUAL = 'MANUAL',
+    AUTOMATED = 'AUTOMATED',
+    URL_CHECK = 'URL_CHECK'
+}
+
+// Interfaces
+export interface Condition {
+    factId: string;
+    type: keyof typeof ConditionType;
+}
 
 export interface AcceptanceCriterion {
     id: string;
     description: string;
-    validationType: ValidationType;
+    validationType: keyof typeof ValidationType;
     validationScript?: string;
 }
 
@@ -90,6 +103,43 @@ export interface ValidationResult {
     message?: string;
 }
 
+// Prisma integration types
+export type PrismaFactInput = Omit<Prisma.FactCreateInput, 'strictness' | 'category'> & {
+    strictness: StrictnessLevel;
+    category: FactCategory;
+};
+
+export type PrismaFactSelect = Prisma.FactSelect;
+
+// Request/Response types for MCP
+export interface FactRequest {
+    id?: string;
+    type?: string;
+    strictness?: StrictnessLevel;
+    version?: string;
+}
+
+export interface FactResponse {
+    id: string;
+    content: string;
+    strictness: StrictnessLevel;
+    type: string;
+    category: FactCategory;
+    minVersion: string;
+    maxVersion: string;
+    conditions: Condition[];
+    acceptanceCriteria: AcceptanceCriterion[];
+    applicable: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+
+// Test factory types
+export interface TestFactoryInput extends Partial<PrismaFactInput> {
+    id?: string;
+}
+
+// Storage provider interface
 export interface StorageProvider {
     setFact(
         id: string,
