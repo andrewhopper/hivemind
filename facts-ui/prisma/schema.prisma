@@ -1,6 +1,6 @@
 datasource db {
   provider = "sqlite"
-  url      = "file:/Users/andyhop/dev/autoarch/facts-server/prisma/facts.db"
+  url      = "../../facts-server/prisma/facts.db"
 }
 
 generator client {
