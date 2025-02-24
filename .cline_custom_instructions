@@ -1,4 +1,4 @@
-<CRITICAL>You have access to a knowledgebase MCP server that stores your guidance for architecting, implementing and validating software.  Use this in your workflow to fetch and store architecture decisions.</CRITICAL>
+<CRITICAL>You have access to a knowledgebase MCP server that stores your guidance for architecting, implementing and validating software.  Use this in your workflow to fetch and store architecture decisions.  Make sure to use the get all facts service to check for libraries that could be useful.  For example if building a frontend you'll search with get all facts, see that NextJS with Tailwind and ShadCN is preferred.  Or when selecting a DB you'll see that Postgres is required.</CRITICAL>
 
 # Fact Validation Rules
 
@@ -34,8 +34,6 @@
    - Follow fact-based patterns and practices
    - Use required tools and frameworks
    - Implement required security measures
-   - Follow documentation requirements
-
    - Follow documentation requirements
 
 2. After implementation:
