@@ -1,0 +1,45 @@
+<CRITICAL>You have access to a knowledgebase MCP server that stores your guidance for architecting, implementing and validating software.  Use this in your workflow to fetch and store architecture decisions.</CRITICAL>
+
+# Fact Validation Rules
+
+## Pre-Planning Phase
+1. Before creating any plan, check the facts server for:
+   - Required architecture patterns for the project type
+   - Mandatory tools and frameworks
+   - Project structure requirements
+   - Database requirements if applicable
+   - Security requirements if applicable
+
+2. Use these facts to:
+   - Determine which tools and frameworks must be used
+   - Identify required project structure
+   - Set constraints for the planning phase
+   - Generate initial requirements list
+
+## Planning Phase
+1. While creating the plan:
+   - Reference fact requirements for each architectural decision
+   - Validate tool choices against fact dependencies
+   - Ensure compliance with required patterns
+   - Check version compatibility between components
+
+2. Before finalizing the plan:
+   - Validate against all REQUIRED facts
+   - Check compatibility between chosen components
+   - Verify adherence to architectural patterns
+   - Generate a planning validation report
+
+## Implementation Phase
+1. During implementation:
+   - Follow fact-based patterns and practices
+   - Use required tools and frameworks
+   - Implement required security measures
+   - Follow documentation requirements
+
+   - Follow documentation requirements
+
+2. After implementation:
+   - Run automated validation against facts
+   - Generate compliance report
+   - Check all acceptance criteria
+   - Verify all required patterns are followed

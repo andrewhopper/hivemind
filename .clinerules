@@ -1,4 +1,3 @@
-
 version: "1.0"
 
 # Communication settings
@@ -55,11 +54,27 @@ documentation:
       files:
         - name: "{timestamp}-validation-report.md"
           sections:
-            - "Summary"
+            - "Executive Summary"
+            - "Validation Context"
             - "Required Facts"
+              subsections:
+                - "Compliant"
+                - "Non-compliant"
+                - "Not Applicable"
             - "Recommended Facts"
+              subsections:
+                - "Implemented"
+                - "Missing"
+            - "Performance Metrics"
+            - "Security Analysis"
+            - "Code Quality Metrics"
             - "Issues"
+              subsections:
+                - "Critical"
+                - "Major"
+                - "Minor"
             - "Recommendations"
+            - "Next Steps"
 
 # Operation modes configuration
 modes:
@@ -150,11 +165,115 @@ facts:
       "BACKEND",
       "DOCUMENTATION"
     ]
-    # Automatic validation hooks
+    
+    # Validation stages
+    stages:
+      pre_planning:
+        enabled: true
+        categories:
+          - ARCHITECTURE_PATTERN
+          - PROJECT_STRUCTURE
+          - FRAMEWORK
+          - DATABASE
+          - SECURITY
+        actions:
+          on_validation:
+            - check_required_facts
+            - determine_tools
+            - set_constraints
+          on_failure:
+            - block_planning
+            - generate_requirements
+      
+      post_planning:
+        enabled: true
+        categories:
+          - ARCHITECTURE_PATTERN
+          - DESIGN_PATTERN
+          - PROJECT_STRUCTURE
+          - FRAMEWORK
+        actions:
+          on_validation:
+            - validate_architecture
+            - check_dependencies
+            - verify_patterns
+          on_failure:
+            - reject_plan
+            - generate_violations_report
+      
+      post_implementation:
+        enabled: true
+        categories:
+          - all
+        checks:
+          - type: automated
+            patterns:
+              - file_structure
+              - dependency_usage
+              - security_compliance
+          - type: manual
+            patterns:
+              - code_quality
+              - pattern_adherence
+        actions:
+          on_success:
+            - generate_compliance_report
+            - update_metrics
+          on_failure:
+            - generate_issues_report
+            - suggest_fixes
+    # LLM-based validation hooks
     hooks:
       pre_commit: true      # Validate before git commits
       pre_deploy: true      # Validate before deployments
       pull_request: true    # Validate on PR creation/update
+    
+    # LLM-based preflight validation
+    preflight:
+      enabled: true
+      post_implementation: true
+      report_path: "docs/validation"
+      checks:
+        - type: "architecture"
+          categories: ["ARCHITECTURE_PATTERN", "PROJECT_STRUCTURE", "DESIGN_PATTERN"]
+          strictness: ["REQUIRED", "RECOMMENDED"]
+        - type: "database"
+          categories: ["DATABASE"]
+          strictness: ["REQUIRED"]
+        - type: "api"
+          categories: ["BACKEND", "FRONTEND"]
+          strictness: ["REQUIRED"]
+      actions:
+        on_failure:
+          - generate_report
+          - fail_implementation
+        on_success:
+          - generate_report
+          - mark_validated
+    
+    # LLM-based postflight validation
+    postflight:
+      enabled: true
+      report_path: "docs/validation/postflight"
+      checks:
+        - type: "performance"
+          thresholds:
+            response_time: 200
+            memory_usage: 512
+        - type: "security"
+          categories: ["SECURITY"]
+          strictness: ["REQUIRED"]
+        - type: "quality"
+          metrics:
+            code_coverage: 80
+            complexity: 20
+      actions:
+        on_failure:
+          - generate_report
+          - notify_team
+        on_success:
+          - generate_report
+          - update_metrics
     
   # Automatic fact creation triggers
   triggers:
