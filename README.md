@@ -8,8 +8,9 @@ When working with automatic coding tools like Cline in Cursor, developers often 
 
 This repository is a prototype that demonstrates an MCP server that allows facts to be set, retrieved, searched, and validated against. The goal is to help autonomous coding tools maintain consistency with your project's standards and preferences.
 
-## Features
+See an [example validation report](docs/validation/2025-02-24-validation-report.md) that demonstrates how HiveMind validates projects against established facts.
 
+## Features
 - **Facts Management**: Store and retrieve development decisions, guidelines, and standards
 - **Automated Validation**: Validate code changes against established criteria
 - **Flexible Categories**: Support for multiple development aspects (frontend, backend, security, etc.)
