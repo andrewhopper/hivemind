@@ -67,10 +67,16 @@ export interface FactData {
     category: FactCategory;
     minVersion: string;
     maxVersion: string;
-    conditions: Condition[];
-    acceptanceCriteria: AcceptanceCriterion[];
+    conditions?: Condition[];
+    acceptanceCriteria?: AcceptanceCriterion[];
     createdAt: string;
     updatedAt: string;
+}
+
+export interface Fact extends FactData {
+    id: string;
+    applicable: boolean;
+    content_embedding?: string | null;
 }
 
 export interface StorageSearchResult extends FactData {

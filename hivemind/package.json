@@ -15,7 +15,10 @@
     "prepublishOnly": "npm run build",
     "preversion": "npm test",
     "version": "npm run build && git add -A",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "prisma": {
     "seed": "node --loader ts-node/esm prisma/seed/index.ts"
@@ -54,11 +57,17 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.5.0",
     "@prisma/client": "^6.4.1",
+    "semver": "^7.7.1",
     "sqlite-vec": "^0.1.7-alpha.2",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.2",
+    "@types/jest": "^29.5.12",
+    "@types/semver": "^7.5.8",
+    "jest": "^29.7.0",
     "prisma": "^6.4.1",
+    "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }

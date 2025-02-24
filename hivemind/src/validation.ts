@@ -1,4 +1,8 @@
-import { AcceptanceCriterion, ValidationResult } from './types.js';
+import { AcceptanceCriterion, ValidationResult, Fact } from './types.js';
+import { PrismaClient } from '@prisma/client';
+import semver from 'semver';
+
+const prisma = new PrismaClient();
 
 export class ValidationError extends Error {
     constructor(message: string) {
@@ -48,6 +52,90 @@ export async function validateCriteria(
     }
 
     return results;
+}
+
+export interface ValidationResponse {
+    isValid: boolean;
+    errors: string[];
+}
+
+export async function validateFact(fact: Fact, version?: string): Promise<ValidationResponse> {
+    const errors: string[] = [];
+
+    // Validate required fields
+    if (!fact.content) errors.push('Missing required field: content');
+    if (!fact.category) errors.push('Missing required field: category');
+    if (!fact.type) errors.push('Missing required field: type');
+    if (!fact.strictness) errors.push('Missing required field: strictness');
+
+    // Validate version compatibility if version is provided
+    if (version && fact.minVersion && fact.maxVersion) {
+        const isCompatible = semver.satisfies(
+            version,
+            `>=${fact.minVersion} ${fact.maxVersion === '*' ? '' : '<' + fact.maxVersion}`
+        );
+        if (!isCompatible) {
+            errors.push(`Version ${version} is not compatible (requires >=${fact.minVersion} <${fact.maxVersion})`);
+        }
+    }
+
+    // Validate conditions
+    const conditionValidation = await validateConditions(fact.id);
+    if (!conditionValidation.isValid) {
+        errors.push(...conditionValidation.errors);
+    }
+
+    // Validate acceptance criteria
+    if (fact.acceptanceCriteria?.length) {
+        const criteriaResults = await validateCriteria(fact.content, fact.acceptanceCriteria);
+        for (const result of criteriaResults) {
+            if (!result.passed) {
+                errors.push(`Acceptance criterion "${result.criterionId}" failed validation: ${result.message}`);
+            }
+        }
+    }
+
+    return {
+        isValid: errors.length === 0,
+        errors
+    };
+}
+
+export async function validateConditions(factId: string): Promise<ValidationResponse> {
+    const errors: string[] = [];
+
+    const fact = await prisma.fact.findUnique({
+        where: { id: factId },
+        include: { conditions: true }
+    });
+
+    if (!fact) {
+        return { isValid: false, errors: ['Fact not found'] };
+    }
+
+    for (const condition of fact.conditions) {
+        const targetFact = await prisma.fact.findUnique({
+            where: { id: condition.targetId }
+        });
+
+        if (!targetFact) {
+            errors.push(`Referenced fact '${condition.targetId}' not found`);
+            continue;
+        }
+
+        if (condition.type === 'REQUIRES' && !targetFact.applicable) {
+            errors.push(`Required fact '${condition.targetId}' is not applicable`);
+        }
+
+        if (condition.type === 'CONFLICTS_WITH' && targetFact.applicable) {
+            errors.push(`Fact conflicts with active fact '${condition.targetId}'`);
+        }
+    }
+
+    return {
+        isValid: errors.length === 0,
+        errors
+    };
 }
 
 export function validateFactConditions(
