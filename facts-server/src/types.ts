@@ -51,10 +51,12 @@ export interface Condition {
     type: 'REQUIRES' | 'CONFLICTS_WITH';
 }
 
+export type ValidationType = 'MANUAL' | 'AUTOMATED' | 'URL_CHECK';
+
 export interface AcceptanceCriterion {
     id: string;
     description: string;
-    validationType: 'MANUAL' | 'AUTOMATED';
+    validationType: ValidationType;
     validationScript?: string;
 }
 
