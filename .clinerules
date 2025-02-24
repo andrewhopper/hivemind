@@ -1,4 +1,129 @@
+
 version: "1.0"
+
+# Communication settings
+communication:
+  emojis:
+    design:
+      start: "🎨 Starting design phase..."
+      thinking: "🤔 Analyzing design requirements..."
+      diagram: "📊 Creating system diagram..."
+      complete: "✨ Design spec created in docs/design/"
+    
+    implement:
+      start: "🚀 Starting implementation..."
+      progress: "⚙️ Implementing features..."
+      testing: "🧪 Testing implementation..."
+      complete: "✅ Implementation finished"
+    
+    validate:
+      start: "🔍 Starting validation..."
+      checking: "📋 Checking against facts..."
+      issue: "⚠️ Found compliance issue..."
+      pass: "✅ Validation passed"
+      fail: "❌ Validation failed"
+      complete: "📝 Validation report created in docs/validation/"
+    
+    revise:
+      start: "🔄 Starting revision..."
+      progress: "📝 Making changes..."
+      complete: "✨ Revision complete"
+    
+    refactor:
+      start: "🔧 Starting refactoring..."
+      progress: "🔨 Refactoring in progress..."
+      metrics: "📊 Checking quality metrics..."
+      complete: "✨ Refactoring complete"
+
+# Documentation settings
+documentation:
+  output_dir: "./docs"
+  templates:
+    design:
+      path: "docs/design"
+      files:
+        - name: "{timestamp}-design-spec.md"
+          sections:
+            - "Overview"
+            - "Architecture"
+            - "Components"
+            - "Data Flow"
+            - "Technical Decisions"
+    
+    validate:
+      path: "docs/validation"
+      files:
+        - name: "{timestamp}-validation-report.md"
+          sections:
+            - "Summary"
+            - "Required Facts"
+            - "Recommended Facts"
+            - "Issues"
+            - "Recommendations"
+
+# Operation modes configuration
+modes:
+  design:
+    description: "Architecture and system design phase"
+    allowed_operations:
+      - read_file
+      - list_files
+      - search_files
+      - list_code_definition_names
+      - write_to_file:
+        extensions: [".md", ".mdx", ".mmd"]
+      - access_mcp_resource
+      - use_mcp_tool
+      - ask_followup_question
+    restrictions:
+      - "No code modifications allowed"
+      - "Can only create/modify markdown and mermaid files"
+      - "Focus on architecture documentation and diagrams"
+
+  implement:
+    description: "Code implementation phase"
+    allowed_operations:
+      - all
+    restrictions:
+      - "Must follow design documents"
+      - "Must validate against facts"
+
+  validate:
+    description: "Verification and compliance checking"
+    allowed_operations:
+      - read_file
+      - list_files
+      - search_files
+      - list_code_definition_names
+      - write_to_file:
+        extensions: [".md"]
+      - browser_action
+      - execute_command:
+        type: "read-only"
+      - access_mcp_resource
+      - use_mcp_tool
+      - ask_followup_question
+    restrictions:
+      - "No code modifications allowed"
+      - "Can only create validation reports in markdown"
+      - "Can run tests and analysis tools"
+
+  revise:
+    description: "Code modification and improvement"
+    allowed_operations:
+      - all
+    restrictions:
+      - "Must maintain existing architecture"
+      - "Changes must be validated against facts"
+
+  refactor:
+    description: "Code restructuring and optimization"
+    allowed_operations:
+      - all
+    restrictions:
+      - "Must maintain existing functionality"
+      - "Must improve code quality metrics"
+      - "Changes must be validated against facts"
 
 # Facts integration settings
 facts:
