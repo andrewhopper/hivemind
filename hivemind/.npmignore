@@ -15,6 +15,7 @@ test/
 coverage/
 *.test.ts
 *.spec.ts
+*.test.js
 
 # Development database
 prisma/facts.db
@@ -41,3 +42,10 @@ CONTRIBUTING.md
 *.swo
 .DS_Store
 Thumbs.db
+
+# New fields from the code block
+tests/
+*.test.*
+.eslintrc
+.prettierrc
+jest.config.js

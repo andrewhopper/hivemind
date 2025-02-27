@@ -40,10 +40,18 @@ export enum FactCategory {
     // Cross-cutting
     ACCESSIBILITY = 'ACCESSIBILITY',
     INTERNATIONALIZATION = 'INTERNATIONALIZATION',
-    ERROR_HANDLING = 'ERROR_HANDLING'
+    ERROR_HANDLING = 'ERROR_HANDLING',
+
+    // New categories
+    TECHNICAL = 'TECHNICAL',
+    BUSINESS = 'BUSINESS',
+    COMPLIANCE = 'COMPLIANCE'
 }
 
 export enum StrictnessLevel {
+    STRICT = 'STRICT',
+    MODERATE = 'MODERATE',
+    LENIENT = 'LENIENT',
     REQUIRED = 'REQUIRED',
     RECOMMENDED = 'RECOMMENDED',
     OPTIONAL = 'OPTIONAL'
@@ -63,13 +71,13 @@ export enum ValidationType {
 // Interfaces
 export interface Condition {
     factId: string;
-    type: keyof typeof ConditionType;
+    type: 'REQUIRES' | 'CONFLICTS_WITH';
 }
 
 export interface AcceptanceCriterion {
     id: string;
     description: string;
-    validationType: keyof typeof ValidationType;
+    validationType: 'MANUAL' | 'AUTOMATED';
     validationScript?: string;
 }
 

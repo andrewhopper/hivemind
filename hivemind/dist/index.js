@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import { Server } from './sdk/server.js';
-import { StdioServerTransport } from './sdk/stdio.js';
-import { CallToolRequestSchema, ErrorCode, ListToolsRequestSchema, McpError } from './sdk/types.js';
+import { Server } from '@modelcontextprotocol/sdk/server';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio';
+import { CallToolRequestSchema, ErrorCode, ListToolsRequestSchema, McpError } from '@modelcontextprotocol/sdk/types';
 import { PrismaStorageProvider } from './storage.js';
 import { validateCriteria } from './validation.js';
 import { StrictnessLevel, FactCategory } from './types.js';

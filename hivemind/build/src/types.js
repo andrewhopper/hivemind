@@ -1,3 +1,4 @@
+// Enums
 export var FactCategory;
 (function (FactCategory) {
     // Architecture Layers
@@ -39,3 +40,14 @@ export var StrictnessLevel;
     StrictnessLevel["RECOMMENDED"] = "RECOMMENDED";
     StrictnessLevel["OPTIONAL"] = "OPTIONAL";
 })(StrictnessLevel || (StrictnessLevel = {}));
+export var ConditionType;
+(function (ConditionType) {
+    ConditionType["REQUIRES"] = "REQUIRES";
+    ConditionType["CONFLICTS_WITH"] = "CONFLICTS_WITH";
+})(ConditionType || (ConditionType = {}));
+export var ValidationType;
+(function (ValidationType) {
+    ValidationType["MANUAL"] = "MANUAL";
+    ValidationType["AUTOMATED"] = "AUTOMATED";
+    ValidationType["URL_CHECK"] = "URL_CHECK";
+})(ValidationType || (ValidationType = {}));

@@ -80,19 +80,20 @@ describe('MCP Server Integration', () => {
         await server.connect(transport);
 
         // Capture the request handler
-        transport.onRequest((handler) => {
-            requestHandler = handler;
+        transport.onRequest(async (request) => {
+            requestHandler = request;
+            return { content: [{ type: 'text', text: 'Handler captured' }] };
         });
 
         // Register handlers
-        server.setHandler('get_all_facts', async () => {
+        server.setRequestHandler('get_all_facts', async () => {
             const facts = await testUtils.prisma.fact.findMany();
             return {
                 content: [{ type: 'text', text: JSON.stringify(facts) }]
             };
         });
 
-        server.setHandler('get_fact', async (request: McpRequest) => {
+        server.setRequestHandler('get_fact', async (request: McpRequest) => {
             const id = request.params.id as string;
             const fact = await testUtils.prisma.fact.findUnique({
                 where: { id }
@@ -102,7 +103,7 @@ describe('MCP Server Integration', () => {
             };
         });
 
-        server.setHandler('search_facts', async (request: McpRequest) => {
+        server.setRequestHandler('search_facts', async (request: McpRequest) => {
             const { type, strictness } = request.params as { type?: string; strictness?: string };
             const facts = await testUtils.prisma.fact.findMany({
                 where: {
@@ -117,7 +118,7 @@ describe('MCP Server Integration', () => {
             };
         });
 
-        server.setHandler('set_fact', async (request: McpRequest) => {
+        server.setRequestHandler('set_fact', async (request: McpRequest) => {
             const params = request.params as Prisma.FactCreateInput;
             const fact = await testUtils.prisma.fact.upsert({
                 where: { id: params.id },

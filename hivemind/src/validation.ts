@@ -1,6 +1,6 @@
 import { AcceptanceCriterion, ValidationResult, Fact } from './types.js';
 import { PrismaClient } from '@prisma/client';
-import semver from 'semver';
+import * as semver from 'semver';
 
 const prisma = new PrismaClient();
 

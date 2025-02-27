@@ -2,6 +2,8 @@ import { PrismaClient, Prisma } from '@prisma/client';
 import { execSync } from 'child_process';
 import { StrictnessLevel, FactCategory } from '../src/types.js';
 import { beforeAll, afterAll, beforeEach } from '@jest/globals';
+import { mkdirSync, existsSync } from 'fs';
+import { join } from 'path';
 
 type CreateTestFactData = Partial<
     Omit<Prisma.FactCreateInput, 'strictness' | 'category'> & {
@@ -10,11 +12,19 @@ type CreateTestFactData = Partial<
     }
 >;
 
+// Ensure test database directory exists
+const TEST_DB_DIR = join(process.cwd(), 'prisma');
+const TEST_DB_PATH = join(TEST_DB_DIR, 'test.db');
+
+if (!existsSync(TEST_DB_DIR)) {
+    mkdirSync(TEST_DB_DIR, { recursive: true });
+}
+
 // Create a singleton PrismaClient for tests
 const prisma = new PrismaClient({
     datasources: {
         db: {
-            url: 'file:./test.db?connection_limit=1'
+            url: `file:${TEST_DB_PATH}`
         }
     }
 });
@@ -23,8 +33,17 @@ const prisma = new PrismaClient({
 beforeAll(async () => {
     // Reset database before tests
     try {
-        // Run migrations to ensure schema is up to date
-        execSync('npx prisma migrate reset --force', { stdio: 'inherit' });
+        // Set DATABASE_URL for migrations
+        process.env.DATABASE_URL = `file:${TEST_DB_PATH}`;
+
+        // Run migrations
+        execSync('npx prisma migrate reset --force', {
+            stdio: 'inherit',
+            env: {
+                ...process.env,
+                DATABASE_URL: `file:${TEST_DB_PATH}`
+            }
+        });
     } catch (error) {
         console.error('Error setting up test database:', error);
         throw error;
@@ -38,11 +57,11 @@ afterAll(async () => {
 
 // Reset database state before each test
 beforeEach(async () => {
-    // Reset database before each test
     try {
-        execSync('npx prisma migrate reset --force', { stdio: 'inherit' });
+        // Clear all data but keep the schema
+        await prisma.fact.deleteMany();
     } catch (error) {
-        console.error('Error resetting test database:', error);
+        console.error('Error clearing test data:', error);
         throw error;
     }
 });
@@ -55,7 +74,7 @@ export const testUtils = {
             data: {
                 id: data.id || 'test-fact',
                 content: data.content || 'Test fact content',
-                strictness: data.strictness || StrictnessLevel.RECOMMENDED,
+                strictness: data.strictness || StrictnessLevel.MODERATE,
                 type: data.type || 'test',
                 category: data.category || FactCategory.TESTING_PATTERN,
                 minVersion: data.minVersion || '1.0.0',
@@ -67,8 +86,6 @@ export const testUtils = {
         });
     },
     clearDatabase: async () => {
-        await prisma.acceptanceCriterion.deleteMany();
-        await prisma.condition.deleteMany();
         await prisma.fact.deleteMany();
     }
 };

@@ -1,10 +1,17 @@
 #!/usr/bin/env node
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { CallToolRequestSchema, ErrorCode, ListToolsRequestSchema, McpError } from '@modelcontextprotocol/sdk/types.js';
+import { Server } from './sdk/server.js';
+import { StdioServerTransport } from './sdk/stdio.js';
+import { CallToolRequestSchema, ErrorCode, ListToolsRequestSchema, McpError } from './sdk/types.js';
 import { PrismaStorageProvider } from './storage.js';
 import { validateCriteria, validateFactConditions } from './validation.js';
 import { StrictnessLevel, FactCategory, AcceptanceCriterion, Condition } from './types.js';
+
+interface ToolRequest {
+    params: {
+        name: string;
+        arguments: any;
+    };
+}
 
 class FactsServer {
     private server: Server;
@@ -263,7 +270,7 @@ class FactsServer {
         }));
 
         // Handler for executing tools
-        this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
+        this.server.setRequestHandler(CallToolRequestSchema, async (request: ToolRequest) => {
             switch (request.params.name) {
                 case 'get_all_facts': {
                     const facts = await this.storage.searchFacts({});
@@ -348,7 +355,7 @@ class FactsServer {
                     }
 
                     try {
-                        const results = await validateCriteria(args.content, fact.acceptanceCriteria);
+                        const results = await validateCriteria(args.content, fact.acceptanceCriteria || []);
                         return {
                             content: [{ type: 'text', text: JSON.stringify(results, null, 2) }]
                         };

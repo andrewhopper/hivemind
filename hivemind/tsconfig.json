@@ -1,22 +1,22 @@
 {
     "compilerOptions": {
-        "target": "ES2020",
-        "module": "ES2020",
+        "target": "es2020",
+        "module": "es2020",
         "moduleResolution": "node",
         "outDir": "./build",
-        "rootDir": ".",
+        "rootDir": "./",
         "strict": true,
         "esModuleInterop": true,
-        "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true,
-        "declaration": true
+        "declaration": true,
+        "allowJs": true,
+        "resolveJsonModule": true
     },
     "include": [
         "src/**/*",
-        "prisma/seed/**/*"
+        "tests/**/*"
     ],
     "exclude": [
         "node_modules",
-        "build"
+        "dist"
     ]
 }

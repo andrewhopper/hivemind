@@ -71,11 +71,11 @@ export class PrismaStorageProvider {
             category: fact.category,
             minVersion: fact.minVersion,
             maxVersion: fact.maxVersion,
-            conditions: fact.conditions.map(c => ({
+            conditions: fact.conditions.map((c) => ({
                 factId: c.targetId,
                 type: c.type
             })),
-            acceptanceCriteria: fact.acceptanceCriteria.map(ac => ({
+            acceptanceCriteria: fact.acceptanceCriteria.map((ac) => ({
                 id: ac.id,
                 description: ac.description,
                 validationType: ac.validationType,
@@ -119,7 +119,7 @@ export class PrismaStorageProvider {
                 ${whereClause}
                 ORDER BY similarity DESC`, options.embedding, options.embedding, threshold, ...params);
             // Fetch full fact data including relations
-            const factPromises = rawResults.map(result => this.prisma.fact.findUnique({
+            const factPromises = rawResults.map((result) => this.prisma.fact.findUnique({
                 where: { id: result.id },
                 include: {
                     conditions: true,
@@ -161,11 +161,11 @@ export class PrismaStorageProvider {
             category: fact.category,
             minVersion: fact.minVersion,
             maxVersion: fact.maxVersion,
-            conditions: fact.conditions.map(c => ({
+            conditions: fact.conditions.map((c) => ({
                 factId: c.targetId,
                 type: c.type
             })),
-            acceptanceCriteria: fact.acceptanceCriteria.map(ac => ({
+            acceptanceCriteria: fact.acceptanceCriteria.map((ac) => ({
                 id: ac.id,
                 description: ac.description,
                 validationType: ac.validationType,

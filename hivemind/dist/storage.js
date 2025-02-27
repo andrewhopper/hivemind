@@ -1,27 +1,10 @@
-import { PrismaClient, Prisma } from '@prisma/client';
-import type { Condition as PrismaCondition, AcceptanceCriterion as PrismaAcceptanceCriterion, Fact as PrismaFact } from '@prisma/client';
-import { StorageProvider, StorageSearchResult, StrictnessLevel, FactCategory, Condition, AcceptanceCriterion } from './types.js';
-
-export class PrismaStorageProvider implements StorageProvider {
-    private prisma: PrismaClient;
-
+import { PrismaClient } from '@prisma/client';
+export class PrismaStorageProvider {
     constructor() {
         this.prisma = new PrismaClient();
     }
-
-    async setFact(
-        id: string,
-        content: string,
-        strictness: StrictnessLevel,
-        type: string,
-        category: FactCategory,
-        minVersion: string,
-        maxVersion: string,
-        conditions: Condition[],
-        acceptanceCriteria: AcceptanceCriterion[],
-        contentEmbedding?: string
-    ): Promise<void> {
-        const data: Prisma.FactCreateInput | Prisma.FactUpdateInput = {
+    async setFact(id, content, strictness, type, category, minVersion, maxVersion, conditions, acceptanceCriteria, contentEmbedding) {
+        const data = {
             id,
             content,
             strictness,
@@ -45,10 +28,9 @@ export class PrismaStorageProvider implements StorageProvider {
                 }))
             }
         };
-
         await this.prisma.fact.upsert({
             where: { id },
-            create: data as Prisma.FactCreateInput,
+            create: data,
             update: {
                 ...data,
                 conditions: {
@@ -70,8 +52,7 @@ export class PrismaStorageProvider implements StorageProvider {
             }
         });
     }
-
-    async getFact(id: string): Promise<StorageSearchResult | null> {
+    async getFact(id) {
         const fact = await this.prisma.fact.findUnique({
             where: { id },
             include: {
@@ -79,27 +60,25 @@ export class PrismaStorageProvider implements StorageProvider {
                 acceptanceCriteria: true
             }
         });
-
         if (!fact) {
             return null;
         }
-
         return {
             id: fact.id,
             content: fact.content,
-            strictness: fact.strictness as StrictnessLevel,
+            strictness: fact.strictness,
             type: fact.type,
-            category: fact.category as FactCategory,
+            category: fact.category,
             minVersion: fact.minVersion,
             maxVersion: fact.maxVersion,
-            conditions: fact.conditions.map((c: PrismaCondition) => ({
+            conditions: fact.conditions.map(c => ({
                 factId: c.targetId,
-                type: c.type as 'REQUIRES' | 'CONFLICTS_WITH'
+                type: c.type
             })),
-            acceptanceCriteria: fact.acceptanceCriteria.map((ac: PrismaAcceptanceCriterion) => ({
+            acceptanceCriteria: fact.acceptanceCriteria.map(ac => ({
                 id: ac.id,
                 description: ac.description,
-                validationType: ac.validationType as 'MANUAL' | 'AUTOMATED',
+                validationType: ac.validationType,
                 validationScript: ac.validationScript || undefined
             })),
             createdAt: fact.createdAt.toISOString(),
@@ -107,94 +86,65 @@ export class PrismaStorageProvider implements StorageProvider {
             applicable: fact.applicable
         };
     }
-
-    async searchFacts(options: {
-        type?: string;
-        category?: FactCategory;
-        strictness?: StrictnessLevel;
-        version?: string;
-        embedding?: string;
-        similarityThreshold?: number;
-    }): Promise<StorageSearchResult[]> {
+    async searchFacts(options) {
         let facts;
-
         if (options.embedding) {
             // Use raw query for vector similarity search
             const threshold = options.similarityThreshold || 0.8;
             const whereConditions = [];
-            const params: any[] = [options.embedding, threshold];
-
+            const params = [options.embedding, threshold];
             if (options.type) {
                 whereConditions.push('f.type = ?');
                 params.push(options.type);
             }
-
             if (options.category) {
                 whereConditions.push('f.category = ?');
                 params.push(options.category);
             }
-
             if (options.strictness) {
                 whereConditions.push('f.strictness = ?');
                 params.push(options.strictness);
             }
-
             if (options.version) {
                 whereConditions.push('f.minVersion <= ? AND f.maxVersion >= ?');
                 params.push(options.version, options.version);
             }
-
             const whereClause = whereConditions.length
                 ? 'AND ' + whereConditions.join(' AND ')
                 : '';
-
-            const rawResults = await this.prisma.$queryRawUnsafe<Array<{ id: string }>>(
-                `SELECT f.*, 
+            const rawResults = await this.prisma.$queryRawUnsafe(`SELECT f.*, 
                        vector_similarity(f.content_embedding, ?) as similarity
                 FROM "Fact" f
                 WHERE vector_similarity(f.content_embedding, ?) > ?
                 ${whereClause}
-                ORDER BY similarity DESC`,
-                options.embedding,
-                options.embedding,
-                threshold,
-                ...params
-            );
-
+                ORDER BY similarity DESC`, options.embedding, options.embedding, threshold, ...params);
             // Fetch full fact data including relations
-            const factPromises = rawResults.map((result: { id: string }) =>
-                this.prisma.fact.findUnique({
-                    where: { id: result.id },
-                    include: {
-                        conditions: true,
-                        acceptanceCriteria: true
-                    }
-                })
-            );
-
-            facts = (await Promise.all(factPromises)).filter((fact: PrismaFact | null): fact is PrismaFact => fact !== null);
-        } else {
-            const where: Prisma.FactWhereInput = {};
-
+            const factPromises = rawResults.map(result => this.prisma.fact.findUnique({
+                where: { id: result.id },
+                include: {
+                    conditions: true,
+                    acceptanceCriteria: true
+                }
+            }));
+            facts = (await Promise.all(factPromises)).filter((fact) => fact !== null);
+        }
+        else {
+            const where = {};
             if (options.type) {
                 where.type = options.type;
             }
-
             if (options.category) {
                 where.category = options.category;
             }
-
             if (options.strictness) {
                 where.strictness = options.strictness;
             }
-
             if (options.version) {
                 where.AND = [
                     { minVersion: { lte: options.version } },
                     { maxVersion: { gte: options.version } }
                 ];
             }
-
             facts = await this.prisma.fact.findMany({
                 where,
                 include: {
@@ -203,26 +153,22 @@ export class PrismaStorageProvider implements StorageProvider {
                 }
             });
         }
-
-        return (facts as Array<PrismaFact & {
-            conditions: PrismaCondition[];
-            acceptanceCriteria: PrismaAcceptanceCriterion[];
-        }>).map(fact => ({
+        return facts.map(fact => ({
             id: fact.id,
             content: fact.content,
-            strictness: fact.strictness as StrictnessLevel,
+            strictness: fact.strictness,
             type: fact.type,
-            category: fact.category as FactCategory,
+            category: fact.category,
             minVersion: fact.minVersion,
             maxVersion: fact.maxVersion,
-            conditions: fact.conditions.map((c: PrismaCondition) => ({
+            conditions: fact.conditions.map(c => ({
                 factId: c.targetId,
-                type: c.type as 'REQUIRES' | 'CONFLICTS_WITH'
+                type: c.type
             })),
-            acceptanceCriteria: fact.acceptanceCriteria.map((ac: PrismaAcceptanceCriterion) => ({
+            acceptanceCriteria: fact.acceptanceCriteria.map(ac => ({
                 id: ac.id,
                 description: ac.description,
-                validationType: ac.validationType as 'MANUAL' | 'AUTOMATED',
+                validationType: ac.validationType,
                 validationScript: ac.validationScript || undefined
             })),
             createdAt: fact.createdAt.toISOString(),
@@ -230,19 +176,18 @@ export class PrismaStorageProvider implements StorageProvider {
             applicable: fact.applicable
         }));
     }
-
-    async deleteFact(id: string): Promise<boolean> {
+    async deleteFact(id) {
         try {
             await this.prisma.fact.delete({
                 where: { id }
             });
             return true;
-        } catch (error) {
+        }
+        catch (error) {
             return false;
         }
     }
-
-    async close(): Promise<void> {
+    async close() {
         await this.prisma.$disconnect();
     }
 }

@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 export declare enum FactCategory {
     FRONTEND = "FRONTEND",
     BACKEND = "BACKEND",
@@ -29,15 +30,23 @@ export declare enum StrictnessLevel {
     RECOMMENDED = "RECOMMENDED",
     OPTIONAL = "OPTIONAL"
 }
+export declare enum ConditionType {
+    REQUIRES = "REQUIRES",
+    CONFLICTS_WITH = "CONFLICTS_WITH"
+}
+export declare enum ValidationType {
+    MANUAL = "MANUAL",
+    AUTOMATED = "AUTOMATED",
+    URL_CHECK = "URL_CHECK"
+}
 export interface Condition {
     factId: string;
-    type: 'REQUIRES' | 'CONFLICTS_WITH';
+    type: keyof typeof ConditionType;
 }
-export type ValidationType = 'MANUAL' | 'AUTOMATED' | 'URL_CHECK';
 export interface AcceptanceCriterion {
     id: string;
     description: string;
-    validationType: ValidationType;
+    validationType: keyof typeof ValidationType;
     validationScript?: string;
 }
 export interface FactData {
@@ -47,10 +56,15 @@ export interface FactData {
     category: FactCategory;
     minVersion: string;
     maxVersion: string;
-    conditions: Condition[];
-    acceptanceCriteria: AcceptanceCriterion[];
+    conditions?: Condition[];
+    acceptanceCriteria?: AcceptanceCriterion[];
     createdAt: string;
     updatedAt: string;
+}
+export interface Fact extends FactData {
+    id: string;
+    applicable: boolean;
+    content_embedding?: string | null;
 }
 export interface StorageSearchResult extends FactData {
     id: string;
@@ -60,6 +74,34 @@ export interface ValidationResult {
     criterionId: string;
     passed: boolean;
     message?: string;
+}
+export type PrismaFactInput = Omit<Prisma.FactCreateInput, 'strictness' | 'category'> & {
+    strictness: StrictnessLevel;
+    category: FactCategory;
+};
+export type PrismaFactSelect = Prisma.FactSelect;
+export interface FactRequest {
+    id?: string;
+    type?: string;
+    strictness?: StrictnessLevel;
+    version?: string;
+}
+export interface FactResponse {
+    id: string;
+    content: string;
+    strictness: StrictnessLevel;
+    type: string;
+    category: FactCategory;
+    minVersion: string;
+    maxVersion: string;
+    conditions: Condition[];
+    acceptanceCriteria: AcceptanceCriterion[];
+    applicable: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+export interface TestFactoryInput extends Partial<PrismaFactInput> {
+    id?: string;
 }
 export interface StorageProvider {
     setFact(id: string, content: string, strictness: StrictnessLevel, type: string, category: FactCategory, minVersion: string, maxVersion: string, conditions: Condition[], acceptanceCriteria: AcceptanceCriterion[], contentEmbedding?: string): Promise<void>;

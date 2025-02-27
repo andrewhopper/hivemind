@@ -1,8 +1,8 @@
-import { ServerRequest, ServerResponse, ServerTransport } from './types.js';
-export declare class StdioServerTransport implements ServerTransport {
+export declare class StdioServerTransport {
     private requestHandler;
     private readline;
+    constructor();
     connect(): Promise<void>;
     disconnect(): Promise<void>;
-    onRequest(handler: (request: ServerRequest) => Promise<ServerResponse>): void;
+    onRequest(handler: (request: any) => Promise<any>): void;
 }
