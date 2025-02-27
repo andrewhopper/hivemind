@@ -1,0 +1,10 @@
+{
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/andrewhopper/hivemind.git"
+    },
+    "bugs": {
+        "url": "https://github.com/andrewhopper/hivemind/issues"
+    },
+    "homepage": "https://github.com/andrewhopper/hivemind#readme"
+}
