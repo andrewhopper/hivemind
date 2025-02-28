@@ -38,6 +38,19 @@ See an [example validation report](docs/validation/2025-02-24-validation-report.
    ```bash
    npm run build
    ```
+4. Configure the MCP service:
+
+   ```
+    "hivemind": {
+      "command": "node",
+      "args": [
+        "<YOUR PATH>/hivemind/facts-server/build/index.js"
+      ],
+      "env": {},
+      "disabled": false,
+      "autoApprove": []
+    }
+   ```
 
 ### Configuration
 
