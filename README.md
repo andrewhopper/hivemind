@@ -15,9 +15,19 @@ This repository is a prototype that demonstrates an MCP server that allows facts
 See an [example validation report](docs/validation/2025-02-24-validation-report.md) that demonstrates how HiveMind validates projects against established facts.
 
 ## Hivemind in Action
+
+<div>
+    <a href="https://www.loom.com/share/628bf9b86a8f4586a8bdbbf062c110a3">
+      <p>Collaborating with Claude on Dev Standards</p>
+    </a>
+    <a href="https://www.loom.com/share/628bf9b86a8f4586a8bdbbf062c110a3">
+      <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/628bf9b86a8f4586a8bdbbf062c110a3-df2564e9c944b81b-full-play.gif">
+    </a>
+  </div>
+
 <div>
     <a href="https://www.loom.com/share/c95b6c4965ea4d519c3d567ac13a9e03">
-      <p>Hivemind new project example - Watch Video</p>
+      <p>Using dev standards for a new project</p>
     </a>
     <a href="https://www.loom.com/share/c95b6c4965ea4d519c3d567ac13a9e03">
       <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/c95b6c4965ea4d519c3d567ac13a9e03-847027c8986a0186-full-play.gif">
